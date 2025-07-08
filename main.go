@@ -14,17 +14,18 @@ import (
 	"gocv.io/x/gocv"
 )
 
-const closeImg = "close.png"
-const successImg = "success.png"
+const closeImg = "./images/close.png"
+const successImg = "./images/success.png"
 
 func init() {
 	// 自动设置 PATH 环境变量，确保 DLL 能加载
-	abs, err := filepath.Abs("./opencv")
+	exePath, err := os.Executable()
 	if err != nil {
-		fmt.Println("获取 DLL 路径失败:", err)
+		fmt.Println("获取可执行文件路径失败:", err)
 		return
 	}
-	os.Setenv("PATH", os.Getenv("PATH")+";"+abs)
+	exeDir := filepath.Dir(exePath)
+	os.Setenv("PATH", os.Getenv("PATH")+";"+exeDir)
 
 }
 
