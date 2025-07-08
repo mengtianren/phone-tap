@@ -3,7 +3,8 @@
 
 
 ## 项目介绍
-- 手机自动化相关，使用adb+go+gocv+opencv 实现手机自动化相关操作,项目中gocv依赖opencv，opencv具体安装方式详见gocv官网
+- 手机自动化相关，使用adb+go+gocv+opencv 实现手机自动化相关操作,项目中gocv依赖opencv，opencv具体安装方式详见gocv官网,
+- 项目可配合 [Escrcpy](https://github.com/viarotel-org/escrcpy) 项目使用更佳
 
 ## 技术选型
 
