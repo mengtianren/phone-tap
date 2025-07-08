@@ -4,6 +4,10 @@ setlocal
 
 REM === 配置路径 ===
 set "OPENCV_DLL_DIR=C:\opencv\build\install\x64\mingw\bin"
+REM 设置 MinGW bin 路径
+set "MINGW_BIN=C:\Program Files\mingw64\bin"
+
+
 set "DIST_DIR=dist"
 set "EXE_NAME=main.exe"
 
@@ -36,6 +40,7 @@ if not exist "%OPENCV_DLL_DIR%" (
     exit /b 1
 )
 copy /y "%OPENCV_DLL_DIR%\*.dll" "%DIST_DIR%\" >nul
+
 echo ✔️ DLL 拷贝完成
 
 echo.
@@ -68,6 +73,12 @@ if exist "tools\adb.exe" (
 ) else (
     echo ⚠️ 未找到 tools\adb.exe，跳过
 )
+echo.
+echo [步骤5] 拷贝 MinGW DLL...
+copy /y "%MINGW_BIN%\libgcc_s_seh-1.dll" "%DIST_DIR%" >nul
+copy /y "%MINGW_BIN%\libstdc++-6.dll" "%DIST_DIR%" >nul
+copy /y "%MINGW_BIN%\libwinpthread-1.dll" "%DIST_DIR%" >nul
+echo ✔️ MinGW DLL 拷贝完成
 
 echo.
 echo ✅ 打包完成！可执行文件在：%DIST_DIR%\%EXE_NAME%
