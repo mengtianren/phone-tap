@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"phone/config"
 	"strings"
 	"sync"
 	"time"
@@ -115,8 +116,8 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 
 	x, y, err := matchImage(screenFile, closeImg)
 	if err == nil {
-		offsetX := x + 400 + rand.Intn(21) - 10 // [-10, +10]
-		offsetY := y + rand.Intn(21) - 10       // [-10, +10]
+		offsetX := x + config.Cfg.CloseOffsetX + rand.Intn(21) - 10 // [-10, +10]
+		offsetY := y + config.Cfg.CloseOffsetY + rand.Intn(21) - 10 // [-10, +10]
 
 		fmt.Printf("设备 %s ,下标 %d 找到【取消按钮】匹配: 点击 (%d,%d)\n", dev, i, offsetX, offsetY)
 		tap(dev, offsetX, offsetY)
@@ -124,7 +125,7 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 		fmt.Printf("设备 %s 下标 %d 未匹配【取消按钮】图块: %v\n", dev, i, err)
 
 	}
-	delay := rand.Float64()*3 + 1
+	delay := rand.Float64()*float64(config.Cfg.AwaitTime) + 1
 	fmt.Printf("等待 %.2f 秒\n", delay)
 	time.Sleep(time.Duration(delay * float64(time.Second)))
 	fmt.Printf("等待 %.2f 秒完成\n", delay)
@@ -138,8 +139,8 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 
 	x1, y1, err1 := matchImage(screenFile2, successImg)
 	if err1 == nil {
-		offsetX := x1 + rand.Intn(21) - 10 // [-10, +10]
-		offsetY := y1 + rand.Intn(21) - 10 // [-10, +10]
+		offsetX := x1 + config.Cfg.SuccessOffsetX + rand.Intn(21) - 10 // [-10, +10]
+		offsetY := y1 + config.Cfg.SuccessOffsetY + rand.Intn(21) - 10 // [-10, +10]
 		fmt.Printf("设备 %s 下标 %d 找到【完成按钮】匹配: 点击 (%d,%d)\n ", dev, i, offsetX, offsetY)
 		tap(dev, offsetX, offsetY)
 	} else {
@@ -148,6 +149,7 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 }
 
 func main() {
+	index := 1
 	fmt.Println(`
 	1. 请确保已打开USB调试
 	2. 请确保已打开USB调试（安全设置）
@@ -164,12 +166,15 @@ func main() {
 	}
 	// 使用go协程 实现步骤一致
 	for {
+		fmt.Printf("--------第 %d 轮开始------\n", index)
 		var wg sync.WaitGroup
 		for i, dev := range devices {
 			wg.Add(1)
 			go start(i, dev, &wg)
 		}
 		wg.Wait()
-		time.Sleep(10 * time.Second)
+		time.Sleep(time.Duration(config.Cfg.EndTime) * time.Second)
+		fmt.Printf("--------第 %d 轮结束，等待 %d 秒后再次启动------\n", index, config.Cfg.EndTime)
+		index++
 	}
 }
