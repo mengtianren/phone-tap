@@ -8,12 +8,16 @@ import (
 )
 
 type Config struct {
-	CloseOffsetX   int `yaml:"close_offsetx"`
-	CloseOffsetY   int `yaml:"close_offsety"`
-	SuccessOffsetX int `yaml:"success_offsetx"`
-	SuccessOffsetY int `yaml:"success_offsety"`
-	AwaitTime      int `yaml:"await_time"`
-	EndTime        int `yaml:"end_time"`
+	CloseOffsetX     int  `yaml:"close_offsetx"`
+	CloseOffsetY     int  `yaml:"close_offsety"`
+	SuccessOffsetX   int  `yaml:"success_offsetx"`
+	SuccessOffsetY   int  `yaml:"success_offsety"`
+	AwaitTime        int  `yaml:"await_time"`
+	EndTime          int  `yaml:"end_time"`
+	LiveCloseTime    int  `yaml:"live_close_time"`
+	LiveCloseOffsetX int  `yaml:"live_close_offsetx"`
+	LiveCloseOffsetY int  `yaml:"live_close_offsety"`
+	LiveCloseStart   bool `yaml:"live_close_start"`
 }
 
 var Cfg Config

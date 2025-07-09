@@ -17,7 +17,9 @@ import (
 )
 
 const closeImg = "./images/close.png"
+const closeLiveImg = "./images/liveClose.png"
 const successImg = "./images/success.png"
+const saveFold = "./images"
 
 func init() {
 	// 自动设置 PATH 环境变量，确保 DLL 能加载
@@ -107,15 +109,17 @@ func matchImage(screenPath, templatePath string) (int, int, error) {
 func start(i int, dev string, wg *sync.WaitGroup) {
 	// 关闭
 	defer wg.Done()
-	screenFile := fmt.Sprintf("phone_%d_1.png", i)
+	screenFile := fmt.Sprintf("%s/phone_%d_1.png", saveFold, i)
 	err := takeScreenshot(dev, screenFile)
 	if err != nil {
 		fmt.Println("❌ 截图失败:", err)
+
 		return
 	}
 
 	x, y, err := matchImage(screenFile, closeImg)
 	if err == nil {
+		fmt.Printf("✅ 设备 %s ,下标 %d 找到【取消按钮】匹配: 原始坐标 (%d,%d)\n", dev, i, x, y)
 		offsetX := x + config.Cfg.CloseOffsetX + rand.Intn(21) - 10 // [-10, +10]
 		offsetY := y + config.Cfg.CloseOffsetY + rand.Intn(21) - 10 // [-10, +10]
 
@@ -123,6 +127,23 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 		tap(dev, offsetX, offsetY)
 	} else {
 		fmt.Printf("❌ 设备 %s 下标 %d 未匹配【取消按钮】图块: %v\n", dev, i, err)
+		if config.Cfg.LiveCloseStart {
+			fmt.Println("⚠️ 兼容直播间")
+			x3, y3, err3 := matchImage(screenFile, closeLiveImg)
+			if err3 == nil {
+				offsetX := x3 + config.Cfg.LiveCloseOffsetX + rand.Intn(21) - 10 // [-10, +10]
+				offsetY := y3 + config.Cfg.LiveCloseOffsetY + rand.Intn(21) - 10 // [-10, +10]
+
+				time.Sleep(time.Duration(config.Cfg.LiveCloseTime) * time.Second)
+				delay := rand.Float64()*float64(5) + 1
+				time.Sleep(time.Duration(delay * float64(time.Second)))
+				fmt.Printf("⚠️ 兼容直播间 设备 %s ,下标 %d 找到【取消按钮】匹配: 点击 (%d,%d)\n", dev, i, offsetX, offsetY)
+				tap(dev, offsetX, offsetY)
+			} else {
+				fmt.Printf("❌ 设备 %s 下标 %d 进程非直播间\n", dev, i)
+			}
+
+		}
 
 	}
 	delay := rand.Float64()*float64(config.Cfg.AwaitTime) + 1
@@ -130,7 +151,7 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 	time.Sleep(time.Duration(delay * float64(time.Second)))
 	fmt.Printf("等待 %.2f 秒完成\n", delay)
 
-	screenFile2 := fmt.Sprintf("phone_%d_2.png", i)
+	screenFile2 := fmt.Sprintf("%s/phone_%d_2.png", saveFold, i)
 	err2 := takeScreenshot(dev, screenFile2)
 	if err2 != nil {
 		fmt.Println("❌ 截图失败222:", err2)
@@ -159,6 +180,13 @@ func main() {
 	6. 请确保文件与可执行文件在同一目录下
 	7. 请确保文件路径中不包含中文
 	`)
+
+	// var name string
+	// fmt.Print("请输入你要进行的步骤1.养号，2.操作：")
+	// fmt.Scanln(&name)
+	// fmt.Println("你好，", name)
+	// return
+
 	devices, err := getDevices()
 	if err != nil || len(devices) == 0 {
 		fmt.Println("❌ 未发现设备:", err)
@@ -173,8 +201,9 @@ func main() {
 			go start(i, dev, &wg)
 		}
 		wg.Wait()
-		time.Sleep(time.Duration(config.Cfg.EndTime) * time.Second)
+
 		fmt.Printf("--------第 %d 轮结束，等待 %d 秒后再次启动------\n", index, config.Cfg.EndTime)
+		time.Sleep(time.Duration(config.Cfg.EndTime) * time.Second)
 		index++
 	}
 }

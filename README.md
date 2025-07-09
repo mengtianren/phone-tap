@@ -19,7 +19,7 @@
 2. 进入项目目录，执行`go mod tidy`安装依赖
 3. images文件夹需要存在close.png和success.png 文件，用来做匹配点击
 4. 执行`go run main.go`启动项目 本地开发
-5. 双击`demo.bat`项目进行打包 会从C:\opencv\build\install\x64\mingw\bin文件夹复制对应的opencv依赖
+5. 双击`demo.bat`项目进行打包 会从（C:\opencv\build\install\x64\mingw\bin，C:\Program Files\mingw64\bin）文件夹复制对应的依赖，注意：需要mingw和opencv环境
 
 ## 项目结构
 
@@ -34,3 +34,10 @@
 ├── config   // 配置选项
 ├── config.yaml  // 项目的具体配置
 ├── README.md // 项目介绍
+```
+
+## 声明
+- 本项目仅用于学习研究，不用于商业用途
+- 本项目不承担因使用本项目而导致的任何损失或损害
+- 本项目不对因使用本项目而导致的任何损失或损害承担责任
+- 本项目不对因使用本项目的用途而导致的任何损失或损害承担责任

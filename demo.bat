@@ -54,6 +54,11 @@ if exist "images\close.png" (
 ) else (
     echo ⚠️ 缺少 close.png
 )
+if exist "images\liveClose.png" (
+    copy /y "images\liveClose.png" "%DIST_DIR%\images\" >nul
+) else (
+    echo ⚠️ 缺少 liveClose.png
+)
 if exist "images\success.png" (
     copy /y "images\success.png" "%DIST_DIR%\images\" >nul
 ) else (
