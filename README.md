@@ -17,8 +17,9 @@
 
 1. 克隆项目到本地
 2. 进入项目目录，执行`go mod tidy`安装依赖
-3. 执行`go run main.go`启动项目 本地开发
-4. 双击`demo.bat`项目进行打包 会从C:\opencv\build\install\x64\mingw\bin文件夹复制对应的opencv依赖
+3. images文件夹需要存在close.png和success.png 文件，用来做匹配点击
+4. 执行`go run main.go`启动项目 本地开发
+5. 双击`demo.bat`项目进行打包 会从C:\opencv\build\install\x64\mingw\bin文件夹复制对应的opencv依赖
 
 ## 项目结构
 

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -113,8 +114,11 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 
 	x, y, err := matchImage(screenFile, closeImg)
 	if err == nil {
-		fmt.Printf("设备 %s ,下标 %d 找到【取消按钮】匹配: 点击 (%d,%d)\n", dev, i, x+10, y+10)
-		tap(dev, x+10, y+10)
+		offsetX := x + 400 + rand.Intn(21) - 10 // [-10, +10]
+		offsetY := y + rand.Intn(21) - 10       // [-10, +10]
+
+		fmt.Printf("设备 %s ,下标 %d 找到【取消按钮】匹配: 点击 (%d,%d)\n", dev, i, offsetX, offsetY)
+		tap(dev, offsetX, offsetY)
 	} else {
 		fmt.Printf("设备 %s 下标 %d 未匹配【取消按钮】图块: %v\n", dev, i, err)
 
@@ -132,8 +136,10 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 
 	x1, y1, err1 := matchImage(screenFile2, successImg)
 	if err1 == nil {
-		fmt.Printf("设备 %s 下标 %d 找到【完成按钮】匹配: 点击 (%d,%d)\n ", dev, i, x1, y1)
-		tap(dev, x1, y1)
+		offsetX := x1 + rand.Intn(21) - 10 // [-10, +10]
+		offsetY := y1 + rand.Intn(21) - 10 // [-10, +10]
+		fmt.Printf("设备 %s 下标 %d 找到【完成按钮】匹配: 点击 (%d,%d)\n ", dev, i, offsetX, offsetY)
+		tap(dev, offsetX, offsetY)
 	} else {
 		fmt.Printf("设备 %s 下标 %d 未匹配【完成按钮】图块: %v\n", dev, i, err1)
 	}
@@ -162,6 +168,6 @@ func main() {
 			go start(i, dev, &wg)
 		}
 		wg.Wait()
-		time.Sleep(5 * time.Second)
+		time.Sleep(10 * time.Second)
 	}
 }
