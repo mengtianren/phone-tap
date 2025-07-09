@@ -31,4 +31,6 @@
 ├── go.mod // 项目的依赖
 ├── go.sum // 依赖的校验值
 ├── main.go  // 项目主入口
+├── config   // 配置选项
+├── config.yaml  // 项目的具体配置
 ├── README.md // 项目介绍

@@ -47,6 +47,7 @@ echo.
 echo [步骤4] 拷贝资源文件...
 
  copy /y "config.yaml" "%DIST_DIR%\" >nul
+ echo ✔️ config.yaml 拷贝完成
 
 if exist "images\close.png" (
     copy /y "images\close.png" "%DIST_DIR%\images\" >nul

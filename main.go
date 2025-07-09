@@ -23,7 +23,7 @@ func init() {
 	// 自动设置 PATH 环境变量，确保 DLL 能加载
 	exePath, err := os.Executable()
 	if err != nil {
-		fmt.Println("获取可执行文件路径失败:", err)
+		fmt.Println("❌ 获取可执行文件路径失败:", err)
 		return
 	}
 	exeDir := filepath.Dir(exePath)
@@ -110,7 +110,7 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 	screenFile := fmt.Sprintf("phone_%d_1.png", i)
 	err := takeScreenshot(dev, screenFile)
 	if err != nil {
-		fmt.Println("截图失败:", err)
+		fmt.Println("❌ 截图失败:", err)
 		return
 	}
 
@@ -119,10 +119,10 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 		offsetX := x + config.Cfg.CloseOffsetX + rand.Intn(21) - 10 // [-10, +10]
 		offsetY := y + config.Cfg.CloseOffsetY + rand.Intn(21) - 10 // [-10, +10]
 
-		fmt.Printf("设备 %s ,下标 %d 找到【取消按钮】匹配: 点击 (%d,%d)\n", dev, i, offsetX, offsetY)
+		fmt.Printf("✅ 设备 %s ,下标 %d 找到【取消按钮】匹配: 点击 (%d,%d)\n", dev, i, offsetX, offsetY)
 		tap(dev, offsetX, offsetY)
 	} else {
-		fmt.Printf("设备 %s 下标 %d 未匹配【取消按钮】图块: %v\n", dev, i, err)
+		fmt.Printf("❌ 设备 %s 下标 %d 未匹配【取消按钮】图块: %v\n", dev, i, err)
 
 	}
 	delay := rand.Float64()*float64(config.Cfg.AwaitTime) + 1
@@ -133,7 +133,7 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 	screenFile2 := fmt.Sprintf("phone_%d_2.png", i)
 	err2 := takeScreenshot(dev, screenFile2)
 	if err2 != nil {
-		fmt.Println("截图失败222:", err2)
+		fmt.Println("❌ 截图失败222:", err2)
 		return
 	}
 
@@ -141,10 +141,10 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 	if err1 == nil {
 		offsetX := x1 + config.Cfg.SuccessOffsetX + rand.Intn(21) - 10 // [-10, +10]
 		offsetY := y1 + config.Cfg.SuccessOffsetY + rand.Intn(21) - 10 // [-10, +10]
-		fmt.Printf("设备 %s 下标 %d 找到【完成按钮】匹配: 点击 (%d,%d)\n ", dev, i, offsetX, offsetY)
+		fmt.Printf("✅ 设备 %s 下标 %d 找到【完成按钮】匹配: 点击 (%d,%d)\n ", dev, i, offsetX, offsetY)
 		tap(dev, offsetX, offsetY)
 	} else {
-		fmt.Printf("设备 %s 下标 %d 未匹配【完成按钮】图块: %v\n", dev, i, err1)
+		fmt.Printf("❌ 设备 %s 下标 %d 未匹配【完成按钮】图块: %v\n", dev, i, err1)
 	}
 }
 
@@ -161,7 +161,7 @@ func main() {
 	`)
 	devices, err := getDevices()
 	if err != nil || len(devices) == 0 {
-		fmt.Println("未发现设备:", err)
+		fmt.Println("❌ 未发现设备:", err)
 		return
 	}
 	// 使用go协程 实现步骤一致
