@@ -27,6 +27,7 @@ func init() {
 	}
 	exeDir := filepath.Dir(exePath)
 	os.Setenv("PATH", os.Getenv("PATH")+";"+exeDir)
+	rand.Seed(time.Now().UnixNano())
 
 }
 
@@ -123,9 +124,10 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 		fmt.Printf("设备 %s 下标 %d 未匹配【取消按钮】图块: %v\n", dev, i, err)
 
 	}
-	fmt.Println("等待3秒")
-	time.Sleep(3 * time.Second)
-	fmt.Println("等待3秒完成")
+	delay := rand.Float64()*3 + 1
+	fmt.Printf("等待 %.2f 秒\n", delay)
+	time.Sleep(time.Duration(delay * float64(time.Second)))
+	fmt.Printf("等待 %.2f 秒完成\n", delay)
 
 	screenFile2 := fmt.Sprintf("phone_%d_2.png", i)
 	err2 := takeScreenshot(dev, screenFile2)
