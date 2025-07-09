@@ -1,11 +1,12 @@
 # 识别到关闭按钮之后 偏移多少像素之后进行点击 会在当前值的基础上 [-10, 10]
 close_offsetx: 462
 close_offsety: 10
-live_close_offsetx: 545
+
 
 # 兼容第一种情况找不到 live_close_start如果为true  会根据这个条件继续找
-live_close_offsety: 0
-live_close_time: 30
+live_close_offsetx: 612
+live_close_offsety: 10
+live_close_time: 38
 live_close_start: True
 
 
@@ -14,6 +15,6 @@ live_close_start: True
 success_offsetx: 0
 success_offsety: 0
 # 点击关闭按钮之后，多少秒后点击确认按钮 会在当前值的基础上 [-1, 1]
-await_time: 10
+await_time: 4
 # 当前进程进行完毕之后，多少秒进行下次进程
 end_time: 30

@@ -93,6 +93,47 @@ func matchImage(screenPath, templatePath string) (int, int, error) {
 	result := gocv.NewMatWithSize(resultRows, resultCols, gocv.MatTypeCV32F)
 	defer result.Close()
 
+	// 如果是识别 closeImg 此处可修改为所有对比都使用白色对比，则启用颜色过滤
+	if templatePath == closeImg {
+		// 设定HSV白色范围（饱和度小、亮度高）
+		lower := gocv.NewScalar(0, 0, 200, 0)    // S=0, V=200
+		upper := gocv.NewScalar(180, 40, 255, 0) // S=40, V=255
+
+		filterHSV := func(img gocv.Mat) gocv.Mat {
+			hsv := gocv.NewMat()
+			gocv.CvtColor(img, &hsv, gocv.ColorBGRToHSV)
+			mask := gocv.NewMat()
+			gocv.InRangeWithScalar(hsv, lower, upper, &mask)
+			hsv.Close()
+			return mask
+		}
+
+		// 过滤截图和模板图中的白色区域
+		filteredSrc := filterHSV(src)
+		defer filteredSrc.Close()
+		filteredTpl := filterHSV(tpl)
+		defer filteredTpl.Close()
+
+		// 可选调试保存：
+		// gocv.IMWrite("./filtered_screen.png", filteredSrc)
+		// gocv.IMWrite("./filtered_template.png", filteredTpl)
+
+		resultCols := filteredSrc.Cols() - filteredTpl.Cols() + 1
+		resultRows := filteredSrc.Rows() - filteredTpl.Rows() + 1
+		results := gocv.NewMatWithSize(resultRows, resultCols, gocv.MatTypeCV32F)
+		defer results.Close()
+
+		gocv.MatchTemplate(filteredSrc, filteredTpl, &result, gocv.TmCcoeffNormed, gocv.NewMat())
+		_, maxVal, _, maxLoc := gocv.MinMaxLoc(result)
+		if maxVal < 0.7 {
+			return 0, 0, fmt.Errorf("未找到匹配区域，置信度不足: %.2f", maxVal)
+		}
+
+		return maxLoc.X, maxLoc.Y, nil
+	}
+
+	// 非 closeImg 的默认流程（原图直接匹配）
+
 	mask := gocv.NewMat() // 空 mask 符合要求
 	defer mask.Close()
 
@@ -119,7 +160,7 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 
 	x, y, err := matchImage(screenFile, closeImg)
 	if err == nil {
-		fmt.Printf("✅ 设备 %s ,下标 %d 找到【取消按钮】匹配: 原始坐标 (%d,%d)\n", dev, i, x, y)
+
 		offsetX := x + config.Cfg.CloseOffsetX + rand.Intn(21) - 10 // [-10, +10]
 		offsetY := y + config.Cfg.CloseOffsetY + rand.Intn(21) - 10 // [-10, +10]
 
@@ -167,6 +208,15 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 	} else {
 		fmt.Printf("❌ 设备 %s 下标 %d 未匹配【完成按钮】图块: %v\n", dev, i, err1)
 	}
+}
+
+func filterByColor(img gocv.Mat, lower, upper gocv.Scalar) gocv.Mat {
+	hsv := gocv.NewMat()
+	gocv.CvtColor(img, &hsv, gocv.ColorBGRToHSV)
+	mask := gocv.NewMat()
+	gocv.InRangeWithScalar(hsv, lower, upper, &mask)
+	hsv.Close()
+	return mask
 }
 
 func main() {
