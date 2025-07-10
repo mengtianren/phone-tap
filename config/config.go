@@ -25,7 +25,7 @@ var Cfg Config
 func loadConfig(path string) {
 	data, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Print("❌ 读取变量失败1，使用默认配置")
+		fmt.Print("--------❌ 读取变量失败1，使用默认配置--------\n")
 		Cfg = Config{
 			CloseOffsetX:   400,
 			CloseOffsetY:   0,
@@ -38,7 +38,7 @@ func loadConfig(path string) {
 
 	err1 := yaml.Unmarshal(data, &Cfg)
 	if err1 != nil {
-		fmt.Print("❌ 读取变量失败2: ，使用默认配置\n")
+		fmt.Print("--------❌ 读取变量失败2: ，使用默认配置--------\n")
 		Cfg = Config{
 			CloseOffsetX:   400,
 			CloseOffsetY:   0,

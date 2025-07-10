@@ -1,11 +1,11 @@
 # 识别到关闭按钮之后 偏移多少像素之后进行点击 会在当前值的基础上 [-10, 10]
 close_offsetx: 462
-close_offsety: 10
+close_offsety: 20
 
 
 # 兼容第一种情况找不到 live_close_start如果为true  会根据这个条件继续找
-live_close_offsetx: 612
-live_close_offsety: 10
+live_close_offsetx: 31
+live_close_offsety: 30
 live_close_time: 38
 live_close_start: True
 

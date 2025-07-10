@@ -94,7 +94,7 @@ func matchImage(screenPath, templatePath string) (int, int, error) {
 	defer result.Close()
 
 	// 如果是识别 closeImg 此处可修改为所有对比都使用白色对比，则启用颜色过滤
-	if templatePath == closeImg {
+	if templatePath == closeImg || templatePath == closeLiveImg {
 		// 设定HSV白色范围（饱和度小、亮度高）
 		lower := gocv.NewScalar(0, 0, 200, 0)    // S=0, V=200
 		upper := gocv.NewScalar(180, 40, 255, 0) // S=40, V=255
@@ -168,6 +168,7 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 		tap(dev, offsetX, offsetY)
 	} else {
 		fmt.Printf("❌ 设备 %s 下标 %d 未匹配【取消按钮】图块: %v\n", dev, i, err)
+		// 直播间
 		if config.Cfg.LiveCloseStart {
 			fmt.Println("⚠️ 兼容直播间")
 			x3, y3, err3 := matchImage(screenFile, closeLiveImg)
@@ -175,8 +176,7 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 				offsetX := x3 + config.Cfg.LiveCloseOffsetX + rand.Intn(21) - 10 // [-10, +10]
 				offsetY := y3 + config.Cfg.LiveCloseOffsetY + rand.Intn(21) - 10 // [-10, +10]
 
-				time.Sleep(time.Duration(config.Cfg.LiveCloseTime) * time.Second)
-				delay := rand.Float64()*float64(5) + 1
+				delay := rand.Float64()*float64(config.Cfg.LiveCloseTime) + 1
 				time.Sleep(time.Duration(delay * float64(time.Second)))
 				fmt.Printf("⚠️ 兼容直播间 设备 %s ,下标 %d 找到【取消按钮】匹配: 点击 (%d,%d)\n", dev, i, offsetX, offsetY)
 				tap(dev, offsetX, offsetY)
@@ -210,15 +210,6 @@ func start(i int, dev string, wg *sync.WaitGroup) {
 	}
 }
 
-func filterByColor(img gocv.Mat, lower, upper gocv.Scalar) gocv.Mat {
-	hsv := gocv.NewMat()
-	gocv.CvtColor(img, &hsv, gocv.ColorBGRToHSV)
-	mask := gocv.NewMat()
-	gocv.InRangeWithScalar(hsv, lower, upper, &mask)
-	hsv.Close()
-	return mask
-}
-
 func main() {
 	index := 1
 	fmt.Println(`
@@ -244,7 +235,10 @@ func main() {
 	}
 	// 使用go协程 实现步骤一致
 	for {
-		fmt.Printf("--------第 %d 轮开始------\n", index)
+		fmt.Printf("--------第 %d 轮开始，，等待 %d 秒后启动------\n", index, config.Cfg.EndTime)
+		time.Sleep(time.Duration(config.Cfg.EndTime) * time.Second)
+		delay := rand.Float64()*float64(5) + 1
+		time.Sleep(time.Duration(delay * float64(time.Second)))
 		var wg sync.WaitGroup
 		for i, dev := range devices {
 			wg.Add(1)
@@ -252,8 +246,8 @@ func main() {
 		}
 		wg.Wait()
 
-		fmt.Printf("--------第 %d 轮结束，等待 %d 秒后再次启动------\n", index, config.Cfg.EndTime)
-		time.Sleep(time.Duration(config.Cfg.EndTime) * time.Second)
+		fmt.Printf("--------第 %d 轮结束------\n", index)
+
 		index++
 	}
 }
